@@ -1,0 +1,172 @@
+---
+title: "벤처기업 투자현황"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+
+
+```{r setup, include=FALSE}
+
+library(readxl)
+library(tidyverse)
+library(stringr)
+
+
+df <- read_xlsx("C:/Users/ehreo/OneDrive/바탕 화면/대학원/경제데이터분석/기말개별과제/chart1_투자규모.xlsx")
+str(df)
+colnames(df) <- c("투자대상벤처기업", "투자단계", "분기", "투자금액", "분야") 
+#df$투자금액 <- str_replace_all(df$투자금액, "-", "")
+class(df$투자금액)
+#df$투자금액 <- as.integer(df$투자금액)
+#class(df$투자금액)
+
+
+분기별투자건수 <- df %>%
+                  filter(분기>="2019. 2q") %>% 
+                  count(분기)
+
+분기별투자금액 <- df %>%
+                  filter(분기>="2019. 2q") %>% 
+                  group_by(분기) %>% 
+                  summarise(sum(투자금액))
+
+단계별투자금액 <- df %>%
+                  filter(분기>="2019. 2q" & 투자단계!="분할" & 투자단계!="알 수 없음" & 투자단계!="지원금") %>% 
+                  group_by(투자단계) %>% 
+                  summarise(sum(투자금액))
+
+
+str(분기별투자건수)
+
+qtr <- 분기별투자건수[,1]
+cnt <- 분기별투자건수[,2]
+colnames(cnt) <- c("투자건수") 
+
+amt <- 분기별투자금액[,2]
+colnames(amt) <- c("투자금액") 
+str(cnt)
+str(qtr)
+str(amt)
+
+Trend <- c(qtr, cnt, amt)
+
+
+ven_name <- df %>% count(투자대상벤처기업)
+#투자기업수
+ven_num=nrow(ven_name)
+#투자건수
+inv_num=nrow(df)
+#총투자금액
+inv_amt <- df %>% summarise(sum(투자금액))
+
+
+```
+
+Column {data-width=450}
+-----------------------------------------------------------------------
+
+
+[ 더브이씨 사이트 보기 ](http://thevc.kr)
+
+### 벤처기업 규모 현황
+
+```{r}
+
+title= "[1] 벤처기업 수"
+print(str_c(title, " : ", ven_num) )
+
+title= "[2] 총투자건수"
+print(str_c(title, " : ", inv_num) )
+
+title= "[3] 총투자금액"
+print(str_c(title, " : ", inv_amt) )
+
+
+# Plot the bar chart 
+barplot(Trend$투자금액, main ="분기별투자규모", names.arg=Trend$분기, xlab = "분기", ylab = "투자금액(억원)", col ="green")
+
+
+```
+
+
+
+
+
+Column {data-width=450, .tabset}
+------------------------------------------------------------------------
+   
+### 분야별 투자금액:    SEED
+
+```{r}
+
+분기별투자금액_SR_SEED <- df %>%
+                      filter(분기>="2019. 2q" & 투자단계=="Seed") %>% 
+                      group_by(분기) %>% 
+                      summarise(sum(투자금액))
+
+amt_SR_SEED <- 분기별투자금액_SR_SEED[,2]
+colnames(amt_SR_SEED) <- c("투자금액")
+amt_SR_SEED <- c(qtr, amt_SR_SEED)
+
+barplot(amt_SR_SEED$투자금액, main ="Seed단계 투자금액", names.arg=amt_SR_SEED$분기, xlab = "분기", ylab = "투자금액(억원)", col ="blue")
+
+```
+
+### Series A
+
+```{r}
+
+
+분기별투자금액_SR_A <- df %>%
+                      filter(분기>="2019. 2q" & 투자단계=="Series A") %>% 
+                      group_by(분기) %>% 
+                      summarise(sum(투자금액))
+
+amt_SR_A <- 분기별투자금액_SR_A[,2]
+colnames(amt_SR_A) <- c("투자금액")
+amt_SR_A <- c(qtr, amt_SR_A)
+
+barplot(amt_SR_A$투자금액,  main ="Series A단계 투자금액", names.arg=amt_SR_A$분기, xlab = "분기", ylab = "투자금액(억원)", col ="blue")
+
+```
+
+### Series C
+
+```{r}
+
+분기별투자금액_SR_C <- df %>%
+                      filter(분기>="2019. 2q" & 투자단계=="Series C") %>% 
+                      group_by(분기) %>% 
+                      summarise(sum(투자금액))
+
+amt_SR_C <- 분기별투자금액_SR_C[,2]
+colnames(amt_SR_C) <- c("투자금액")
+amt_SR_C <- c(qtr, amt_SR_C)
+
+barplot(amt_SR_C$투자금액,  main ="Series C단계 투자금액", names.arg=amt_SR_C$분기, xlab = "분기", ylab = "투자금액(억원)", col ="blue")
+
+```
+
+### M&A
+
+```{r}
+
+분기별투자금액_SR_MNA <- df %>%
+                      filter(분기>="2019. 2q" & 투자단계=="M&A") %>% 
+                      group_by(분기) %>% 
+                      summarise(sum(투자금액))
+
+amt_SR_MNA <- 분기별투자금액_SR_MNA[,2]
+colnames(amt_SR_MNA) <- c("투자금액")
+amt_SR_MNA <- c(qtr, amt_SR_MNA)
+
+barplot(amt_SR_MNA$투자금액,  main ="M&A단계 투자금액", names.arg=amt_SR_MNA$분기, xlab = "분기", ylab = "투자금액(억원)", col ="blue")
+
+```
+
+
+
+
