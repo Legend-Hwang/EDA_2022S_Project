@@ -63,6 +63,54 @@ inv_num=nrow(df)
 inv_amt <- df %>% summarise(sum(투자금액))
 
 
+
+stage_Seed_amt <- df %>%
+  filter(분기>="2019. 2q" & (투자단계=="Seed" | 투자단계=="Pre-A")) %>% 
+  summarise(sum(투자금액))
+
+stage_A_amt <- df %>%
+  filter(분기>="2019. 2q" & (투자단계=="Series A" | 투자단계=="Series B")) %>% 
+  summarise(sum(투자금액))
+
+stage_C_amt <- df %>%
+  filter(분기>="2019. 2q" & (투자단계=="Series C" | 투자단계=="Series D" | 투자단계=="Series E" | 투자단계=="Series F" | 투자단계=="Series G")) %>% 
+  summarise(sum(투자금액))
+
+
+stage_IPO_amt <- df %>%
+  filter(분기>="2019. 2q" & (투자단계=="IPO" | 투자단계=="Pre-IPO")) %>% 
+  summarise(sum(투자금액))
+
+stage_MNA_amt<- df %>%
+  filter(분기>="2019. 2q" & (투자단계=="M&A" )) %>% 
+  summarise(sum(투자금액))
+
+
+
+str(stage_Seed_amt)
+
+stage_Seed_amt <- stage_Seed_amt[,1]
+colnames(stage_Seed_amt) <- c("투자금액") 
+
+stage_A_amt <- stage_A_amt[,1]
+colnames(stage_A_amt) <- c("투자금액") 
+
+stage_C_amt <- stage_C_amt[,1]
+colnames(stage_C_amt) <- c("투자금액") 
+
+
+stage_IPO_amt <- stage_IPO_amt[,1]
+colnames(stage_IPO_amt) <- c("투자금액") 
+
+stage_MNA_amt <- stage_MNA_amt[,1]
+colnames(stage_MNA_amt) <- c("투자금액") 
+
+
+stage_amt <- c(stage_Seed_amt$투자금액,stage_A_amt$투자금액,stage_C_amt$투자금액,stage_IPO_amt$투자금액,stage_MNA_amt$투자금액)
+lab <- c("Seed","Series A","Series C","IPO","M&A")
+#pie(stage_amt, label=lab, main="단계별 투자금액 비중")
+
+
 ```
 
 Column {data-width=450}
@@ -75,23 +123,32 @@ Column {data-width=450}
 
 ```{r}
 
-title= "[1] 벤처기업 수"
-print(str_c(title, " : ", ven_num) )
+#title= "[1] 벤처기업 수(개)"
+#print(str_c(title, " : ", ven_num) )
 
-title= "[2] 총투자건수"
-print(str_c(title, " : ", inv_num) )
+#title= "[2] 총투자건수(건)"
+#print(str_c(title, " : ", inv_num) )
 
-title= "[3] 총투자금액"
-print(str_c(title, " : ", inv_amt) )
+title= "총투자금액(억원)"
+print(str_c(title, "  :  ", inv_amt) )
 
 
 # Plot the bar chart 
-barplot(Trend$투자금액, main ="분기별투자규모", names.arg=Trend$분기, xlab = "분기", ylab = "투자금액(억원)", col ="green")
+barplot(Trend$투자금액, names.arg=Trend$분기, xlab = "분기", ylab = "투자금액(억원)", col ="green", density=10)
 
 
 ```
 
 
+### 투자단계별 금액 비중
+
+```{r}
+
+c <- c("white","blue","green","yellow","purple")
+pie(stage_amt, label=lab, main="단계별 투자금액 비중",col=c, density=10)
+
+
+```
 
 
 
@@ -102,6 +159,16 @@ Column {data-width=450, .tabset}
 
 ```{r}
 
+
+title= "SEED 단계 투자금액(억원)"
+#총투자금액
+stage_amt <- df %>%
+             filter(분기>="2019. 2q" & 투자단계=="Seed") %>% 
+             summarise(sum(투자금액))
+
+print(str_c(title, " : ", stage_amt) )
+
+
 분기별투자금액_SR_SEED <- df %>%
                       filter(분기>="2019. 2q" & 투자단계=="Seed") %>% 
                       group_by(분기) %>% 
@@ -111,13 +178,21 @@ amt_SR_SEED <- 분기별투자금액_SR_SEED[,2]
 colnames(amt_SR_SEED) <- c("투자금액")
 amt_SR_SEED <- c(qtr, amt_SR_SEED)
 
-barplot(amt_SR_SEED$투자금액, main ="Seed단계 투자금액", names.arg=amt_SR_SEED$분기, xlab = "분기", ylab = "투자금액(억원)", col ="blue")
+barplot(amt_SR_SEED$투자금액, main ="Seed단계 투자금액", names.arg=amt_SR_SEED$분기, xlab = "분기", ylab = "투자금액(억원)", col ="blue", density=10)
 
 ```
 
 ### Series A
 
 ```{r}
+
+title= "Series A 단계 투자금액(억원)"
+#총투자금액
+stage_amt <- df %>%
+             filter(분기>="2019. 2q" & 투자단계=="Series A") %>% 
+             summarise(sum(투자금액))
+
+print(str_c(title, " : ", stage_amt) )
 
 
 분기별투자금액_SR_A <- df %>%
@@ -129,13 +204,21 @@ amt_SR_A <- 분기별투자금액_SR_A[,2]
 colnames(amt_SR_A) <- c("투자금액")
 amt_SR_A <- c(qtr, amt_SR_A)
 
-barplot(amt_SR_A$투자금액,  main ="Series A단계 투자금액", names.arg=amt_SR_A$분기, xlab = "분기", ylab = "투자금액(억원)", col ="blue")
+barplot(amt_SR_A$투자금액,  main ="Series A단계 투자금액", names.arg=amt_SR_A$분기, xlab = "분기", ylab = "투자금액(억원)", col ="blue", density=10)
 
 ```
 
 ### Series C
 
 ```{r}
+
+title= "Series C 단계 투자금액(억원)"
+#총투자금액
+stage_amt <- df %>%
+             filter(분기>="2019. 2q" & 투자단계=="Series C") %>% 
+             summarise(sum(투자금액))
+
+print(str_c(title, " : ", stage_amt) )
 
 분기별투자금액_SR_C <- df %>%
                       filter(분기>="2019. 2q" & 투자단계=="Series C") %>% 
@@ -146,13 +229,51 @@ amt_SR_C <- 분기별투자금액_SR_C[,2]
 colnames(amt_SR_C) <- c("투자금액")
 amt_SR_C <- c(qtr, amt_SR_C)
 
-barplot(amt_SR_C$투자금액,  main ="Series C단계 투자금액", names.arg=amt_SR_C$분기, xlab = "분기", ylab = "투자금액(억원)", col ="blue")
+barplot(amt_SR_C$투자금액,  main ="Series C단계 투자금액", names.arg=amt_SR_C$분기, xlab = "분기", ylab = "투자금액(억원)", col ="blue", density=10)
 
 ```
+
+
+### IPO
+
+```{r}
+
+title= "IPO 단계 투자금액(억원)"
+#총투자금액
+stage_amt <- df %>%
+             filter(분기>="2019. 2q" & (투자단계=="IPO" | 투자단계=="Pre-IPO")) %>% 
+             summarise(sum(투자금액))
+
+print(str_c(title, " : ", stage_amt) )
+
+
+분기별투자금액_SR_MNA <- df %>%
+                      filter(분기>="2019. 2q" & (투자단계=="IPO" | 투자단계=="Pre-IPO")) %>% 
+                      group_by(분기) %>% 
+                      summarise(sum(투자금액))
+
+amt_SR_MNA <- 분기별투자금액_SR_MNA[,2]
+colnames(amt_SR_MNA) <- c("투자금액")
+amt_SR_MNA <- c(qtr, amt_SR_MNA)
+
+barplot(amt_SR_MNA$투자금액,  main ="IPO 단계 투자금액", names.arg=amt_SR_MNA$분기, xlab = "분기", ylab = "투자금액(억원)", col ="blue", density=10)
+
+
+```
+
 
 ### M&A
 
 ```{r}
+
+title= "M&A 단계 투자금액(억원)"
+#총투자금액
+stage_amt <- df %>%
+             filter(분기>="2019. 2q" & 투자단계=="M&A") %>% 
+             summarise(sum(투자금액))
+
+print(str_c(title, " : ", stage_amt) )
+
 
 분기별투자금액_SR_MNA <- df %>%
                       filter(분기>="2019. 2q" & 투자단계=="M&A") %>% 
@@ -163,7 +284,7 @@ amt_SR_MNA <- 분기별투자금액_SR_MNA[,2]
 colnames(amt_SR_MNA) <- c("투자금액")
 amt_SR_MNA <- c(qtr, amt_SR_MNA)
 
-barplot(amt_SR_MNA$투자금액,  main ="M&A단계 투자금액", names.arg=amt_SR_MNA$분기, xlab = "분기", ylab = "투자금액(억원)", col ="blue")
+barplot(amt_SR_MNA$투자금액,  main ="M&A단계 투자금액", names.arg=amt_SR_MNA$분기, xlab = "분기", ylab = "투자금액(억원)", col ="blue", density=10)
 
 ```
 
